@@ -1,0 +1,101 @@
+
+Metacognition is the process by which learners use knowledge of the task at hand, knowledge of learning strategies, and knowledge of themselves to plan their learning, monitor their progress towards a learning goal, and then evaluate the outcome. 
+
+The literature on expertise highlights the importance of metacognitive skills. Experts possess more knowledge that is better organized and integrated than novices, but they also have highly developed metacognitive skills. They are more aware of themselves as learners and regularly reflect to understand why their chosen strategy is working (or not). They also monitor their progress and know when to check for inconsistencies or errors, which allows them to more productively redirect their efforts (NRC, 2000; Berliner 1994).
+
+Many researchers describe metacognition as having two basic components: a knowledge component and a regulatory component (Ertmer & Newby, 1996; Schraw, 1998). 
+
+Metacognitive knowledge
+Metacognitive knowledge encompasses knowledge of oneself as a learner (e.g., strengths, weaknesses, prior knowledge/experience in the area, preferred time of day for study, preferred study location) and how the human brain encodes, stores, organizes, and retrieves information (Pintrich, 2002). Thus, students should learn about effective learning strategies and how, when, and why to use them (Serra & Metcalfe, 2009).
+
+Metacognitive knowledge also includes knowledge of the task to be completed and effective strategies to complete the task. For example, the metacognitive knowledge to solve textbook engineering problems includes strategies for diagramming the system and determining which governing or constitutive equations apply. Students with more metacognitive knowledge learn better than those with less metacognitive knowledge. 
+
+Self-regulation
+Self-regulation of learning involves the ability to plan, monitor, and evaluate the learning process. It is a skill set that students can develop to learn more effectively and better monitor their progress towards learning goals. You can find out more about self-regulation here.
+
+Why is it important?
+Consider 2 MIT students in the same subject that are both novices in a given topic. They participate in the same learning activities (e.g., problem sets) and access the same textbooks and web resources. However, one of these students performs better on the exam than the other. Why? 
+
+One possible reason (there are many) is that this student may be more aware of themselves as a learner. They may be more reflective and more strategic in their use of learning strategies and how to match them with the task at hand. 
+
+If one goal of higher education is to help students become expert learners, helping students develop metacognitive skills should be an explicit part of the curriculum.
+
+Practices that support development
+Pre-assessments to help students plan
+
+Pre-assessments that help students understand their existing knowledge about a topic can help them plan their learning approach. The pre-assessment could take the form of homework, a quiz, or clicker questions. Timely and specific feedback is key.
+
+Regulatory checklists
+
+An explicit list of prompts about planning, monitoring, and evaluating can help students better regulate their learning (Schraw, 1998):
+
+Planning
+What is the nature of the task?
+What is my goal?
+What information, resources, and strategies do I need?
+How much time will I need?
+Monitoring
+Do I have a clear understanding of what I am doing?
+Does the task make sense?
+Am I reaching my goals?
+Do I need to make changes to my plan?
+Evaluating
+Have I reached my goal?
+What worked?
+What didn’t work?
+What would I do differently next time?
+Reflecting on learning experiences
+
+Reflecting on learning experiences is an important part of metacognition. Reflection helps learners build and fine-tune their metacognitive knowledge and self-regulation skills.
+
+A learning experience can include a class session or a student receiving a completed assignment, project, or exam with feedback. After a learning experience, self-regulated learners will reflect on their learning strategies and their resultant performance to better inform their approach to future learning experiences. This reflection can be facilitated by:
+
+Asking students to write a question or a statement that identifies a topic or concept that is still unclear (i.e., the “muddiest” point). Students should be encouraged to develop a plan and monitor their progress towards achieving clarity on that point (Tanner, 2012).
+Encouraging students to journal or write a letter to their future selves (Tanner, 2012). 
+Asking students to share their evaluation of 1-2 study strategies they used with their peers (Tanner, 2012).
+Distributing “exam wrappers”: post-exam questionnaires with a mixture of close-ended and open-ended questions. Exam wrappers ask students how they studied for the exam, which concepts gave them trouble on the exam, and what they will do to prepare for the next exam. Those who use exam wrappers recommend having students turn them in for points so that the teaching staff can look for general trends in student responses (Lovett, 2016).
+Implementation examples 
+Strategic Resource Use Intervention
+
+A study by Chen and colleagues (Chen, Chavez, Ong, & Gunderson, 2017) presents an external intervention that can be paired with any course without relying heavily on faculty buy-in or involvement.
+
+In the study, undergraduate students enrolled in an introductory statistics course were randomly assigned to 1 of 2 conditions. Students in the treatment condition were provided a list of resources, determined in collaboration with the teaching faculty, and asked to select those they thought would facilitate their studying for an upcoming exam. Students were also asked open-ended questions about why each resource would be useful and how they planned to use each resource. Students in the control condition only received a message stating that their exam was coming up, and they should prepare for it.
+
+Students in the treatment condition outperformed the students in the control condition by one-third of a letter grade. Students in the treatment condition actually used fewer resources when studying and were hypothesized to be more strategic in their approach.
+
+Detailed Timesheets
+
+MIT Professor Stephan L. Chorover asked students to complete detailed timesheets of their learning activities in 9.68: Affect: Neurobiological, Psychological, and Sociocultural Counterparts of Feelings. On the timesheets, students documented the amount of time they spent on various activities and their level of effort and engagement. Students were asked to fill in their timesheets at least 3x/week and bring them to class.  
+
+Journaling
+
+MIT Professor Stephan L. Chorover required students in 9.68 and 9.70: Social Psychology to keep journals to document their progress throughout the subjects and to record their thoughts, feelings, and questions about the subjects. Professor Chorover stressed the utility of journaling in preparing for in-class and study group discussions. Out of respect for personal privacy, the journals were not collected or graded.
+
+Reflecting on learning experiences
+
+MIT Senior Lecturer Anjali Sastry’s project-based subject 15.S07: Global Health Lab intentionally allots time in the syllabus for students to come together and reflect on their projects – what worked well, what did not, which assumptions were valid, which were not, what they learned overall, and how their projects connect to bigger themes.
+
+Portfolios
+
+Olin Professor Helen Donis-Keller has students in her introductory biology course complete a portfolio instead of a final exam. The portfolio is intended to encourage a mastery orientation towards learning and provide opportunities to engage in metacognition. Students are required to include quizzes and selected assignments in their portfolio. Students are asked to reflect on the questions/assignments they had difficulty with, submit corrections, and then reflect on what they learned in making their corrections. Students also self-assess their progress towards the measurable outcomes of the course and provide evidence to support their assessment.
+
+Caveats
+The accuracy of metacognitive monitoring hinges upon accurate judgments of learning
+
+As described above, metacognition relies heavily on self-assessment. Self-assessment is prone to error and bias, so students should be informed of conditions and practices that may lead to more accurate judgments of learning. In general, as described below, judgments of learning following a delayed retrieval attempt from memory will lead to more accurate monitoring of learning (Dunlosky & Nelson, 1992).
+
+Errors due to Familiarity
+
+Students may conflate their general familiarity with a subject with their actual understanding of the specific content at hand (Serra, Metcalfe, Hacker, Dunlosky, & Graesser, 2009). For example, if a student has a calculus exam and a physics exam coming up and generally feels more knowledgeable in math than physics, they may devote more study time to physics. However, this could be a faulty study approach if the student does not have a solid understanding of the specific calculus subtopics to be covered on the exam. Engaging in regular retrieval practice will also help to mitigate familiarity bias.
+
+Another common pitfall related to familiarity that students may encounter is in their comprehension of texts. A student may skim the key terms list of a chapter and overestimate their knowledge of the chapter content because the terms seem familiar. Responding to end-of-chapter comprehension questions immediately after reading a text can also lead to illusions of knowing. A more accurate self-assessment of learning can be made when the learner attempts to define key terms, describe how they are related to each other, and answer comprehension questions about the chapter after a delay (> 30 minutes after reading the chapter). Summarizing texts or generating keywords from a text after a short delay (without referring to the text) has been shown to lead to more accurate judgments of learning (Thiede & Anderson, 2003).
+
+Foresight bias
+
+Prediction about one’s ability to retrieve information at a future time (e.g., during an exam) can suffer from foresight bias when the prediction is made in the presence of the correct answer (e.g., while studying) (Koriat & Bjork, 2005). Within the context of a given book chapter or a given problem set, students may be practicing a limited number of concepts or procedures. This may lead a student to inaccurately believe that the tasks are easy. On an exam covering a wide array of concepts, discerning which concepts apply to which questions may be more difficult. Instead of studying one topic at a time, students should be encouraged to create practice tests where concepts to be covered on the exam are interleaved. Instructor supplied practice tests could also be useful here.
+
+Other Factors to Consider
+Novices are not as good at self-evaluating their comprehension, so build in opportunities for formative assessment.
+Since MIT students were so successful in their K-12 education, they may be overconfident in their use of metacognitive skills, and their habits may be difficult to change. Research indicates that longer-term interventions may be necessary for university students. There may be no noticeable short-term gain from an intervention targeting metacognition because some “un-learning” of previous, ineffective study habits needs to occur (Hattie, Biggs, & Purdie, 1996; Hofer, Yu, & Pintrich, 1998). 
+The evidence suggests that metacognitive training should be provided in the context of the disciplines to promote deeper learning. If used consistently in teaching and learning contexts, metacognitive strategies can be reinforced throughout the curriculum. However, if faculty do not consistently embed metacognitive training in their curriculum, the transfer of metacognitive skills between contexts may still be an issue (Hattie et al., 1996).
+In laboratory studies, subjects allocated more study time to materials they thought were more interesting (Son & Metcalfe, 2000). This suggests that motivational factors influence metacognitive control. Highlighting the real-world applications of content or making explicit ties between the content at hand and other disciplines may increase student interest.

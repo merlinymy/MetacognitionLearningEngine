@@ -1,0 +1,125 @@
+.summary {
+  min-height: 100vh;
+  padding: 48px 24px;
+}
+
+.summary-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.summary-loading {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 48px 0;
+}
+
+.summary-error {
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.summary-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.summary-title {
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.summary-subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.summary-stat {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.summary-stat-value {
+  font-size: 48px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.summary-stat-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.summary-insights,
+.summary-strategies {
+  margin-bottom: 48px;
+}
+
+.summary-section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.summary-insight {
+  padding: 4px 0;
+}
+
+.summary-insight-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.summary-strategy-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.summary-strategy-tag {
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.summary-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .summary-title {
+    font-size: 28px;
+  }
+
+  .summary-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-stat-value {
+    font-size: 36px;
+  }
+}

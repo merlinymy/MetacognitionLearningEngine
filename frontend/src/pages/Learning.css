@@ -1,0 +1,276 @@
+.learning {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.learning-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.learning-header {
+  margin-bottom: 32px;
+}
+
+.learning-exit {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 16px;
+  transition: color 0.15s;
+}
+
+.learning-exit:hover {
+  color: var(--text-primary);
+}
+
+.learning-loading {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 48px 0;
+}
+
+.learning-error {
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.learning-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.learning-phase {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.learning-phase-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.learning-phase-subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-top: -16px;
+}
+
+.learning-chunk-content {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.learning-question {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.learning-label {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.learning-goals,
+.learning-strategies {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.learning-goal,
+.learning-strategy {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.learning-goal input[type="radio"],
+.learning-strategy input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+.learning-goal span,
+.learning-strategy span {
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.learning-textarea {
+  width: 100%;
+  padding: 16px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all 0.15s;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.learning-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.learning-feedback-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.learning-feedback-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.learning-feedback-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.learning-strategy-feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.learning-strategy-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+/* Accuracy Display */
+.accuracy-display {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.accuracy-percentage {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+.accuracy-bar {
+  width: 100%;
+  height: 12px;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.accuracy-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #60a5fa);
+  transition: width 0.6s ease-out;
+  border-radius: 6px;
+}
+
+.accuracy-context {
+  font-size: 15px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0;
+}
+
+/* Calibration Display */
+.calibration-display {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.calibration-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+}
+
+.calibration-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.calibration-label {
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.calibration-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.calibration-message {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.calibration-message p {
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .learning {
+    padding: 16px;
+  }
+
+  .learning-phase-title {
+    font-size: 24px;
+  }
+
+  .learning-phase-subtitle {
+    font-size: 15px;
+  }
+
+  .learning-strategy-buttons {
+    flex-direction: column;
+  }
+
+  .accuracy-percentage {
+    font-size: 24px;
+  }
+
+  .calibration-value {
+    font-size: 18px;
+  }
+}

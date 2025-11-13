@@ -2,13 +2,35 @@
   "name": "metacognitionlearningengine",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node --watch ./bin/www",
+    "dev:backend": "node --watch ./bin/www",
+    "dev:frontend": "cd frontend-demo && npm run dev",
+    "dev": "npm run dev:backend & npm run dev:frontend",
+    "build": "cd frontend && npm run build",
+    "preview": "npm run build && npm start"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.68.0",
+    "@google/genai": "^1.29.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
-    "express": "~4.16.1",
-    "morgan": "~1.9.1"
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mongodb": "^7.0.0",
+    "morgan": "^1.10.1",
+    "openai": "^6.8.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jest": "^29.1.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "jest": "^30.2.0",
+    "prettier": "^3.6.2"
   }
 }

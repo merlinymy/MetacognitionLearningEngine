@@ -1,0 +1,101 @@
+.upload {
+  min-height: 100vh;
+  padding: 48px 24px;
+}
+
+.upload-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.upload-back {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 24px;
+  transition: color 0.15s;
+}
+
+.upload-back:hover {
+  color: var(--text-primary);
+}
+
+.upload-title {
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.upload-subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.upload-input,
+.upload-textarea {
+  width: 100%;
+  padding: 16px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all 0.15s;
+  resize: vertical;
+}
+
+.upload-input:focus,
+.upload-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.upload-input:disabled,
+.upload-textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.upload-textarea {
+  min-height: 200px;
+  line-height: 1.6;
+}
+
+.upload-info {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.upload-error {
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+@media (max-width: 640px) {
+  .upload-title {
+    font-size: 28px;
+  }
+
+  .upload-subtitle {
+    font-size: 15px;
+  }
+}
