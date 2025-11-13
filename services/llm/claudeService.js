@@ -3,10 +3,25 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Initialize Claude client
-const anthropic = new Anthropic({
-  apiKey: process.env.CLAUDE_API_KEY,
-});
+// Initialize Claude client lazily
+let anthropic = null;
+
+function getClaudeClient() {
+  if (!anthropic) {
+    if (
+      !process.env.CLAUDE_API_KEY ||
+      process.env.CLAUDE_API_KEY === "your_claude_api_key_here"
+    ) {
+      throw new Error(
+        "Claude API key is not configured. Please set CLAUDE_API_KEY environment variable.",
+      );
+    }
+    anthropic = new Anthropic({
+      apiKey: process.env.CLAUDE_API_KEY,
+    });
+  }
+  return anthropic;
+}
 
 /**
  * Generate learning chunks from raw content using Claude
@@ -15,7 +30,8 @@ const anthropic = new Anthropic({
  */
 export async function generateChunksWithClaude(content) {
   try {
-    const message = await anthropic.messages.create({
+    const client = getClaudeClient();
+    const message = await client.messages.create({
       model: "claude-sonnet-4-5",
       max_tokens: 4096,
       messages: [
@@ -89,7 +105,8 @@ export async function evaluateResponseWithClaude(
   question
 ) {
   try {
-    const message = await anthropic.messages.create({
+    const client = getClaudeClient();
+    const message = await client.messages.create({
       model: "claude-sonnet-4-5",
       max_tokens: 2048,
       messages: [

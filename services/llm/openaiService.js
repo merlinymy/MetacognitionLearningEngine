@@ -3,10 +3,20 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize OpenAI client lazily
+let openai = null;
+
+function getOpenAIClient() {
+  if (!openai) {
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {
+      throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY environment variable.');
+    }
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return openai;
+}
 
 /**
  * Generate learning chunks from raw content using OpenAI
@@ -15,7 +25,8 @@ const openai = new OpenAI({
  */
 export async function generateChunksWithOpenAI(content) {
   try {
-    const completion = await openai.chat.completions.create({
+    const client = getOpenAIClient();
+    const completion = await client.chat.completions.create({
       model: "gpt-4o",
       messages: [
         {
@@ -92,7 +103,8 @@ export async function evaluateResponseWithOpenAI(
   question
 ) {
   try {
-    const completion = await openai.chat.completions.create({
+    const client = getOpenAIClient();
+    const completion = await client.chat.completions.create({
       model: "gpt-4o",
       messages: [
         {
