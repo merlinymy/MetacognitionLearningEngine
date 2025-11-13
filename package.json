@@ -4,11 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node --watch ./bin/www",
+    "start": "node ./bin/www",
     "dev:backend": "node --watch ./bin/www",
     "dev:frontend": "cd frontend-demo && npm run dev",
     "dev": "npm run dev:backend & npm run dev:frontend",
-    "build": "cd frontend && npm run build",
+    "build": "cd frontend && npm install && npm run build",
     "preview": "npm run build && npm start"
   },
   "dependencies": {
