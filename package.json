@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev:backend": "node --watch ./bin/www",
-    "dev:frontend": "cd frontend-demo && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
     "dev": "npm run dev:backend & npm run dev:frontend",
     "build": "cd frontend && npm install && npm run build",
     "preview": "npm run build && npm start"
@@ -14,13 +14,23 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.68.0",
     "@google/genai": "^1.29.0",
+    "@simplewebauthn/browser": "^13.2.2",
+    "@simplewebauthn/server": "^13.2.2",
+    "bcryptjs": "^3.0.3",
+    "connect-mongo": "^6.0.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "express-session": "^1.18.2",
     "mongodb": "^7.0.0",
     "morgan": "^1.10.1",
-    "openai": "^6.8.1"
+    "nodemailer": "^7.0.11",
+    "openai": "^6.8.1",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

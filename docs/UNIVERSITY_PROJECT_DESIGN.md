@@ -1,9 +1,4 @@
-# Metacognition Learning Engine - University Project Design Document
-
-**Course:** [Your Course Name]
-**Project Team:** [Your Names]
-**Date:** November 2025
-**License:** MIT
+# Metacognition Learning Engine
 
 ---
 

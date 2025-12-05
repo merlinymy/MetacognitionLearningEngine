@@ -33,12 +33,27 @@ export async function generateChunksWithOnDevice(content) {
       chunkId: `chunk_${i}`,
       topic: topic,
       miniTeach: chunkContent.substring(0, 500) + "...",
-      question: `What are the key concepts discussed in: "${topic}"?`,
-      expectedPoints: [
-        "Main concept or definition",
-        "Supporting details or examples",
-        "Implications or applications",
-      ],
+      questions: {
+        gist: `What is the main idea of "${topic}"?`,
+        explain: `How would you explain "${topic}" to someone?`,
+        apply: `How could you apply the concepts from "${topic}" in practice?`,
+      },
+      expectedPoints: {
+        gist: [
+          "Main concept or definition",
+          "Key takeaway",
+        ],
+        explain: [
+          "Main concept or definition",
+          "Supporting details or examples",
+          "Implications or context",
+        ],
+        apply: [
+          "Practical application step",
+          "Real-world use case",
+          "Implementation consideration",
+        ],
+      },
     });
   }
 
@@ -50,12 +65,16 @@ export async function generateChunksWithOnDevice(content) {
  * @param {string} userAnswer - The user's answer
  * @param {Array<string>} expectedPoints - Expected key points
  * @param {string} question - The original question
+ * @param {string} muddyPoint - What the user found confusing (optional)
+ * @param {string} priorKnowledge - What the user already knew (optional)
  * @returns {Promise<Object>} Evaluation results
  */
 export async function evaluateResponseWithOnDevice(
   userAnswer,
   expectedPoints,
-  question
+  question,
+  muddyPoint = "",
+  priorKnowledge = ""
 ) {
   // Simulate processing delay
   await new Promise((resolve) => setTimeout(resolve, 300));
@@ -97,6 +116,11 @@ export async function evaluateResponseWithOnDevice(
 
   if (missingPoints.length > 0) {
     feedback += `You might want to explore: ${missingPoints.slice(0, 2).join(", ")}.`;
+  }
+
+  // Add muddyPoint explanation if provided
+  if (muddyPoint.trim()) {
+    feedback += ` Regarding your confusion about "${muddyPoint.substring(0, 50)}${muddyPoint.length > 50 ? "..." : ""}": This is a common area of uncertainty. Consider reviewing the key concepts and relating them to examples.`;
   }
 
   return {

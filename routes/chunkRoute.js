@@ -1,6 +1,6 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import { mongoClient } from "../db/mongoDBClient.js";
+import { getDb } from "../db/mongoDBClient.js";
 import {
   generateChunks,
   getAvailableProviders,
@@ -11,7 +11,13 @@ const router = express.Router();
 // POST /api/chunks/generate - Generate chunks from text content
 router.post("/generate", async (req, res) => {
   try {
-    const { content, title, provider = "GEMINI" } = req.body;
+    const {
+      content,
+      title,
+      provider = "GEMINI",
+      userId = "anonymous",
+      defaultGoal = "explain",
+    } = req.body;
 
     // Validate content length
     if (!content || content.length < 500) {
@@ -32,14 +38,14 @@ router.post("/generate", async (req, res) => {
     const chunks = await generateChunks(content, provider);
 
     // Create session in database
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
     const sessionsCollection = db.collection("sessions");
 
     const session = {
-      userId: "anonymous",
+      userId,
       rawContent: content,
       contentPreview: title || content.substring(0, 100),
+      defaultGoal,
       createdAt: new Date(),
       completedAt: null,
       status: "in_progress",
@@ -58,7 +64,6 @@ router.post("/generate", async (req, res) => {
     };
 
     const result = await sessionsCollection.insertOne(session);
-    await client.close();
 
     // Return response matching the design document
     res.status(200).json({
@@ -83,15 +88,12 @@ router.get("/:sessionId", async (req, res) => {
       return res.status(400).json({ error: "Invalid session ID" });
     }
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
     const sessionsCollection = db.collection("sessions");
 
     const session = await sessionsCollection.findOne({
       _id: new ObjectId(sessionId),
     });
-
-    await client.close();
 
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
@@ -117,15 +119,12 @@ router.get("/:sessionId/:chunkId", async (req, res) => {
       return res.status(400).json({ error: "Invalid session ID" });
     }
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
     const sessionsCollection = db.collection("sessions");
 
     const session = await sessionsCollection.findOne({
       _id: new ObjectId(sessionId),
     });
-
-    await client.close();
 
     if (!session) {
       return res.status(404).json({ error: "Session not found" });

@@ -1,6 +1,6 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import { mongoClient } from "../db/mongoDBClient.js";
+import { getDb } from "../db/mongoDBClient.js";
 
 const router = express.Router();
 
@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   try {
     const {
-      userId = "anonymous",
+      userId = req.user?._id?.toString() || "anonymous",
       rawContent,
       contentPreview,
       chunks,
@@ -20,8 +20,7 @@ router.post("/", async (req, res) => {
         .json({ error: "Missing required fields: rawContent and chunks" });
     }
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
     const sessionsCollection = db.collection("sessions");
 
     const session = {
@@ -50,7 +49,6 @@ router.post("/", async (req, res) => {
     };
 
     const result = await sessionsCollection.insertOne(session);
-    await client.close();
 
     res.status(201).json({
       sessionId: result.insertedId.toString(),
@@ -65,14 +63,11 @@ router.post("/", async (req, res) => {
 // GET /api/sessions - List all sessions
 router.get("/", async (req, res) => {
   try {
-    const {
-      userId = "690e7ab6363b48473b74634c",
-      limit = 50,
-      skip = 0,
-    } = req.query;
+    // Use authenticated user if available, otherwise use query param or default
+    const defaultUserId = req.user?._id?.toString() || "anonymous";
+    const { userId = defaultUserId, limit = 50, skip = 0 } = req.query;
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
     const sessionsCollection = db.collection("sessions");
 
     const sessions = await sessionsCollection
@@ -81,8 +76,6 @@ router.get("/", async (req, res) => {
       .skip(parseInt(skip))
       .limit(parseInt(limit))
       .toArray();
-
-    await client.close();
 
     res.json({
       sessions: sessions.map((s) => ({
@@ -110,12 +103,10 @@ router.get("/:id", async (req, res) => {
       return res.status(400).json({ error: "Invalid session ID" });
     }
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
     const sessionsCollection = db.collection("sessions");
 
     const session = await sessionsCollection.findOne({ _id: new ObjectId(id) });
-    await client.close();
 
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
@@ -145,17 +136,15 @@ router.patch("/:id/complete-chunk", async (req, res) => {
       return res.status(400).json({ error: "Missing chunkId" });
     }
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
     const sessionsCollection = db.collection("sessions");
 
     const result = await sessionsCollection.updateOne(
       { _id: new ObjectId(id), "chunks.chunkId": chunkId },
-      { $set: { "chunks.$.completed": true } }
+      { $set: { "chunks.$.completed": true } },
     );
 
     if (result.matchedCount === 0) {
-      await client.close();
       return res.status(404).json({ error: "Session or chunk not found" });
     }
 
@@ -178,10 +167,8 @@ router.patch("/:id/complete-chunk", async (req, res) => {
               ? new Date()
               : session.completedAt,
         },
-      }
+      },
     );
-
-    await client.close();
 
     res.json({
       message: "Chunk marked as complete",
@@ -202,34 +189,25 @@ router.get("/:id/summary", async (req, res) => {
       return res.status(400).json({ error: "Invalid session ID" });
     }
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
     const sessionsCollection = db.collection("sessions");
     const responsesCollection = db.collection("responses");
 
     const session = await sessionsCollection.findOne({ _id: new ObjectId(id) });
 
     if (!session) {
-      await client.close();
       return res.status(404).json({ error: "Session not found" });
     }
 
-    // Get all responses for this session
+    // Get all responses for this session (for strategy performance)
     const responses = await responsesCollection
       .find({ sessionId: new ObjectId(id) })
       .toArray();
 
-    // Calculate statistics
-    const totalResponses = responses.length;
-    const averageAccuracy =
-      totalResponses > 0
-        ? responses.reduce((sum, r) => sum + r.accuracy, 0) / totalResponses
-        : 0;
-    const averageConfidence =
-      totalResponses > 0
-        ? responses.reduce((sum, r) => sum + r.confidence, 0) / totalResponses
-        : 0;
-    const calibrationError = averageConfidence - averageAccuracy;
+    // Use stats from session (already calculated on each response)
+    const averageAccuracy = session.sessionStats.averageAccuracy || 0;
+    const averageConfidence = session.sessionStats.averageConfidence || 0;
+    const calibrationError = session.sessionStats.calibrationError || 0;
 
     // Calculate strategy performance
     const strategyMap = {};
@@ -246,7 +224,7 @@ router.get("/:id/summary", async (req, res) => {
         strategy,
         accuracy: Math.round(data.totalAccuracy / data.count),
         uses: data.count,
-      })
+      }),
     );
 
     // Sort by accuracy descending
@@ -266,19 +244,8 @@ router.get("/:id/summary", async (req, res) => {
       }
     }
 
-    // Update session stats in database
-    await sessionsCollection.updateOne(
-      { _id: new ObjectId(id) },
-      {
-        $set: {
-          "sessionStats.averageAccuracy": Math.round(averageAccuracy),
-          "sessionStats.averageConfidence": Math.round(averageConfidence),
-          "sessionStats.calibrationError": Math.round(calibrationError),
-        },
-      }
-    );
-
-    await client.close();
+    // Stats are already updated in real-time by POST /api/responses
+    // No need to recalculate here
 
     res.json({
       sessionId: id,
@@ -310,8 +277,7 @@ router.post("/:id/redo", async (req, res) => {
       return res.status(400).json({ error: "Invalid session ID" });
     }
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
     const sessionsCollection = db.collection("sessions");
     const responsesCollection = db.collection("responses");
 
@@ -319,7 +285,6 @@ router.post("/:id/redo", async (req, res) => {
     const session = await sessionsCollection.findOne({ _id: new ObjectId(id) });
 
     if (!session) {
-      await client.close();
       return res.status(404).json({ error: "Session not found" });
     }
 
@@ -349,8 +314,6 @@ router.post("/:id/redo", async (req, res) => {
       },
     );
 
-    await client.close();
-
     res.json({
       message: "Session reset successfully",
       sessionId: id,
@@ -370,8 +333,7 @@ router.delete("/:id", async (req, res) => {
       return res.status(400).json({ error: "Invalid session ID" });
     }
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
     const sessionsCollection = db.collection("sessions");
     const responsesCollection = db.collection("responses");
 
@@ -382,8 +344,6 @@ router.delete("/:id", async (req, res) => {
     const result = await sessionsCollection.deleteOne({
       _id: new ObjectId(id),
     });
-
-    await client.close();
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ error: "Session not found" });

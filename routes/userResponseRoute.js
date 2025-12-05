@@ -1,12 +1,54 @@
 import express from "express";
 import { ObjectId } from "mongodb";
-import { mongoClient } from "../db/mongoDBClient.js";
+import { getDb } from "../db/mongoDBClient.js";
 import {
   evaluateResponse,
   getAvailableProviders,
 } from "../services/llmService.js";
 
 const router = express.Router();
+
+/**
+ * Update session statistics after a new response is added
+ * Calculates averages for accuracy, confidence, calibration, and total time
+ */
+async function updateSessionStats(sessionsCollection, sessionId) {
+  const db = await getDb();
+  const responsesCollection = db.collection("responses");
+
+  // Get all responses for this session
+  const responses = await responsesCollection
+    .find({ sessionId: sessionId })
+    .toArray();
+
+  if (responses.length === 0) {
+    return; // No responses yet, nothing to update
+  }
+
+  // Calculate statistics
+  const totalResponses = responses.length;
+  const avgAccuracy = Math.round(
+    responses.reduce((sum, r) => sum + r.accuracy, 0) / totalResponses,
+  );
+  const avgConfidence = Math.round(
+    responses.reduce((sum, r) => sum + r.confidence, 0) / totalResponses,
+  );
+  const calibrationError = avgConfidence - avgAccuracy;
+  const totalTime = responses.reduce((sum, r) => sum + r.timeSpentSeconds, 0);
+
+  // Update session stats
+  await sessionsCollection.updateOne(
+    { _id: sessionId },
+    {
+      $set: {
+        "sessionStats.averageAccuracy": avgAccuracy,
+        "sessionStats.averageConfidence": avgConfidence,
+        "sessionStats.calibrationError": calibrationError,
+        "sessionStats.totalTimeSeconds": totalTime,
+      },
+    },
+  );
+}
 
 // POST /api/responses - Submit a chunk response
 router.post("/", async (req, res) => {
@@ -16,9 +58,14 @@ router.post("/", async (req, res) => {
       chunkId,
       goal,
       strategy,
+      customStrategyDescription = "",
+      priorKnowledge = "",
+      hasPriorKnowledge = true,
       userAnswer,
       confidence,
+      muddyPoint = "",
       provider = "GEMINI",
+      priorKnowledgeTimeSeconds = 0,
       planTimeSeconds = 0,
       monitorTimeSeconds = 0,
       hintsUsed = 0,
@@ -40,47 +87,51 @@ router.post("/", async (req, res) => {
       });
     }
 
+    // Validate ObjectId and fetch from database
     if (!ObjectId.isValid(sessionId)) {
       return res.status(400).json({ error: "Invalid session ID" });
     }
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
     const sessionsCollection = db.collection("sessions");
-    const responsesCollection = db.collection("responses");
 
-    // Get the session to find expected points
     const session = await sessionsCollection.findOne({
       _id: new ObjectId(sessionId),
     });
 
     if (!session) {
-      await client.close();
       return res.status(404).json({ error: "Session not found" });
     }
 
     const chunk = session.chunks.find((c) => c.chunkId === chunkId);
 
     if (!chunk) {
-      await client.close();
       return res.status(404).json({ error: "Chunk not found" });
     }
+
+    const responsesCollection = db.collection("responses");
 
     // Validate provider
     const availableProviders = getAvailableProviders();
     if (!availableProviders.includes(provider.toUpperCase())) {
-      await client.close();
       return res.status(400).json({
         error: `Invalid provider. Available providers: ${availableProviders.join(", ")}`,
       });
     }
 
+    // Get goal-specific question and expected points
+    const questionToUse = chunk.questions?.[goal] || chunk.question;
+    const expectedPointsToUse =
+      chunk.expectedPoints?.[goal] || chunk.expectedPoints;
+
     // Evaluate the response using selected LLM provider
     const evaluation = await evaluateResponse(
       userAnswer,
-      chunk.expectedPoints,
-      chunk.question,
-      provider
+      expectedPointsToUse,
+      questionToUse,
+      provider,
+      muddyPoint,
+      priorKnowledge,
     );
 
     const calibrationError = confidence - evaluation.accuracy;
@@ -92,57 +143,71 @@ router.post("/", async (req, res) => {
     }
 
     // Generate a correct answer from expected points
-    const correctAnswer = chunk.expectedPoints.join(". ") + ".";
+    const correctAnswer = expectedPointsToUse.join(". ") + ".";
 
     // Calculate total time
     const evaluateTimeSeconds = 0; // Will be updated when user completes evaluate phase
-    const totalTimeSeconds = planTimeSeconds + monitorTimeSeconds + evaluateTimeSeconds;
+    const totalTimeSeconds =
+      priorKnowledgeTimeSeconds +
+      planTimeSeconds +
+      monitorTimeSeconds +
+      evaluateTimeSeconds;
 
-    // Create response document
+    // Save response to database
     const response = {
       sessionId: new ObjectId(sessionId),
       userId: session.userId,
       chunkId: chunkId,
       chunkTopic: chunk.topic,
+      // Prior Knowledge phase
+      priorKnowledge: priorKnowledge,
+      hasPriorKnowledge: hasPriorKnowledge,
+      priorKnowledgeTimeSeconds: priorKnowledgeTimeSeconds,
+      // Plan phase
       goal: goal,
       strategy: strategy,
+      customStrategyDescription: customStrategyDescription,
       planTimestamp: new Date(),
-      question: chunk.question,
+      planTimeSeconds: planTimeSeconds,
+      // Monitor phase
+      question: questionToUse,
       userAnswer: userAnswer,
       confidence: confidence,
+      muddyPoint: muddyPoint,
       monitorTimestamp: new Date(),
-      expectedPoints: chunk.expectedPoints,
+      monitorTimeSeconds: monitorTimeSeconds,
+      // Help-seeking behavior
+      hintsUsed: hintsUsed,
+      contentReviewed: contentReviewed,
+      // Evaluate phase (LLM evaluation)
+      expectedPoints: expectedPointsToUse,
       correctPoints: evaluation.correctPoints,
       missingPoints: evaluation.missingPoints,
       accuracy: evaluation.accuracy,
       calibrationError: calibrationError,
       calibrationDirection: calibrationDirection,
       feedback: evaluation.feedback,
+      evaluateTimestamp: new Date(),
+      evaluateTimeSeconds: evaluateTimeSeconds,
+      // User reflection (will be updated via PATCH)
       strategyHelpful: null,
       strategyReflection: null,
-      evaluateTimestamp: new Date(),
+      goalAchieved: null,
+      nextTimeAdjustment: null,
+      // Metadata
       createdAt: new Date(),
-      // Time tracking
-      planTimeSeconds: planTimeSeconds,
-      monitorTimeSeconds: monitorTimeSeconds,
-      evaluateTimeSeconds: evaluateTimeSeconds,
       timeSpentSeconds: totalTimeSeconds,
-      // Help-seeking behavior
-      hintsUsed: hintsUsed,
-      contentReviewed: contentReviewed,
     };
 
     const result = await responsesCollection.insertOne(response);
+    const responseId = result.insertedId.toString();
 
-    // Note: Chunk completion is NOT done here - it's done via separate endpoint
-    // to avoid race conditions and maintain single responsibility
-    // The frontend should call PATCH /api/sessions/:id/complete-chunk after user clicks "Next chunk"
-
-    await client.close();
+    // Update session stats with this new response
+    await updateSessionStats(sessionsCollection, new ObjectId(sessionId));
 
     // Return response matching frontend expectations
     res.status(200).json({
-      responseId: result.insertedId.toString(),
+      responseId: responseId,
       accuracy: evaluation.accuracy,
       calibrationError: calibrationError,
       calibrationDirection: calibrationDirection,
@@ -164,8 +229,8 @@ router.get("/", async (req, res) => {
   try {
     const { userId = "anonymous", strategy, limit = 50, skip = 0 } = req.query;
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
+    // Using connection pool
     const responsesCollection = db.collection("responses");
 
     const query = { userId };
@@ -179,8 +244,6 @@ router.get("/", async (req, res) => {
       .skip(parseInt(skip))
       .limit(parseInt(limit))
       .toArray();
-
-    await client.close();
 
     res.json({
       responses: responses.map((r) => ({
@@ -205,17 +268,14 @@ router.get("/session/:sessionId", async (req, res) => {
       return res.status(400).json({ error: "Invalid session ID" });
     }
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
+    // Using connection pool
     const responsesCollection = db.collection("responses");
 
     const responses = await responsesCollection
       .find({ sessionId: new ObjectId(sessionId) })
       .sort({ createdAt: 1 })
       .toArray();
-
-    await client.close();
-
     res.json({
       sessionId: sessionId,
       responses: responses.map((r) => ({
@@ -237,8 +297,8 @@ router.get("/strategy/:strategy", async (req, res) => {
     const { strategy } = req.params;
     const { userId = "anonymous", limit = 50, skip = 0 } = req.query;
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
+    // Using connection pool
     const responsesCollection = db.collection("responses");
 
     const responses = await responsesCollection
@@ -247,8 +307,6 @@ router.get("/strategy/:strategy", async (req, res) => {
       .skip(parseInt(skip))
       .limit(parseInt(limit))
       .toArray();
-
-    await client.close();
 
     res.json({
       strategy: strategy,
@@ -265,11 +323,55 @@ router.get("/strategy/:strategy", async (req, res) => {
   }
 });
 
+// GET /api/responses/strategy-history/:strategy - Get strategy usage history summary
+router.get("/strategy-history/:strategy", async (req, res) => {
+  try {
+    const { strategy } = req.params;
+    const { userId = "anonymous" } = req.query;
+
+    const db = await getDb();
+    const responsesCollection = db.collection("responses");
+
+    // Get all previous uses of this strategy by the user
+    const responses = await responsesCollection
+      .find({
+        userId,
+        strategy,
+        strategyReflection: { $ne: null }, // Only get responses with reflections
+      })
+      .sort({ createdAt: -1 })
+      .limit(10) // Get last 10 uses max
+      .toArray();
+
+    // Return summary data
+    const history = responses.map((r) => ({
+      strategyReflection: r.strategyReflection,
+      strategyHelpful: r.strategyHelpful,
+      accuracy: r.accuracy,
+      createdAt: r.createdAt,
+    }));
+
+    res.json({
+      strategy: strategy,
+      usageCount: history.length,
+      history: history,
+    });
+  } catch (error) {
+    console.error("Error fetching strategy history:", error);
+    res.status(500).json({ error: "Failed to fetch strategy history" });
+  }
+});
+
 // PATCH /api/responses/:id/strategy-helpful - Update strategy helpfulness
 router.patch("/:id/strategy-helpful", async (req, res) => {
   try {
     const { id } = req.params;
-    const { strategyHelpful, strategyReflection = "" } = req.body;
+    const {
+      strategyHelpful,
+      strategyReflection = "",
+      goalAchieved = null,
+      nextTimeAdjustment = null,
+    } = req.body;
 
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Invalid response ID" });
@@ -281,8 +383,8 @@ router.patch("/:id/strategy-helpful", async (req, res) => {
       });
     }
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
+    // Using connection pool
     const responsesCollection = db.collection("responses");
 
     const updateFields = {
@@ -294,14 +396,22 @@ router.patch("/:id/strategy-helpful", async (req, res) => {
       updateFields.strategyReflection = strategyReflection.trim();
     }
 
+    // Add goalAchieved if provided
+    if (goalAchieved) {
+      updateFields.goalAchieved = goalAchieved;
+    }
+
+    // Add nextTimeAdjustment if provided
+    if (nextTimeAdjustment) {
+      updateFields.nextTimeAdjustment = nextTimeAdjustment;
+    }
+
     const result = await responsesCollection.updateOne(
       { _id: new ObjectId(id) },
       {
         $set: updateFields,
       },
     );
-
-    await client.close();
 
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "Response not found" });
@@ -311,6 +421,8 @@ router.patch("/:id/strategy-helpful", async (req, res) => {
       message: "Strategy feedback updated",
       strategyHelpful: strategyHelpful,
       strategyReflection: updateFields.strategyReflection || null,
+      goalAchieved: updateFields.goalAchieved || null,
+      nextTimeAdjustment: updateFields.nextTimeAdjustment || null,
     });
   } catch (error) {
     console.error("Error updating strategy feedback:", error);
@@ -329,15 +441,13 @@ router.delete("/:id", async (req, res) => {
       return res.status(400).json({ error: "Invalid response ID" });
     }
 
-    const client = await mongoClient();
-    const db = client.db("metacognition");
+    const db = await getDb();
+    // Using connection pool
     const responsesCollection = db.collection("responses");
 
     const result = await responsesCollection.deleteOne({
       _id: new ObjectId(id),
     });
-
-    await client.close();
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ error: "Response not found" });

@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import Card from "../components/Card";
 import { getSessions, deleteSession, redoSession } from "../services/api";
 import "./Library.css";
 
-const Library = ({ onSelectSession, onNavigate }) => {
+const Library = ({ user }) => {
+  const navigate = useNavigate();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -12,7 +14,8 @@ const Library = ({ onSelectSession, onNavigate }) => {
   const loadSessions = async () => {
     try {
       setLoading(true);
-      const data = await getSessions();
+      const userId = user?._id || "anonymous";
+      const data = await getSessions(userId);
       setSessions(data.sessions || []);
       setLoading(false);
     } catch (err) {
@@ -49,8 +52,7 @@ const Library = ({ onSelectSession, onNavigate }) => {
 
     try {
       await redoSession(sessionId);
-      // Navigate to the session to start learning
-      onSelectSession(sessionId);
+      navigate(`/learning/${sessionId}`);
     } catch (err) {
       setError(err.message || "Failed to redo session");
     }
@@ -87,7 +89,7 @@ const Library = ({ onSelectSession, onNavigate }) => {
                 : `${sessions.length} session${sessions.length === 1 ? "" : "s"}`}
             </p>
           </div>
-          <Button variant="primary" onClick={() => onNavigate("upload")}>
+          <Button variant="primary" onClick={() => navigate("/upload")}>
             New session
           </Button>
         </div>
@@ -99,7 +101,7 @@ const Library = ({ onSelectSession, onNavigate }) => {
             <p className="library-empty-text">
               Start your first learning session
             </p>
-            <Button variant="primary" onClick={() => onNavigate("upload")}>
+            <Button variant="primary" onClick={() => navigate("/upload")}>
               Upload content
             </Button>
           </div>
@@ -109,7 +111,7 @@ const Library = ({ onSelectSession, onNavigate }) => {
               <Card
                 key={session._id}
                 hover
-                onClick={() => onSelectSession(session._id)}
+                onClick={() => navigate(`/learning/${session._id}`)}
               >
                 <div className="library-session">
                   <div className="library-session-header">

@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import Card from "../components/Card";
-import { getSessionSummary } from "../services/api";
+import { getSessionSummary, getSession } from "../services/api";
 import "./Summary.css";
 
-const Summary = ({ sessionId, onNavigate }) => {
+const Summary = ({ user }) => {
+  const { sessionId } = useParams();
+  const navigate = useNavigate();
   const [summary, setSummary] = useState(null);
+  const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -13,8 +17,12 @@ const Summary = ({ sessionId, onNavigate }) => {
     const loadSummary = async () => {
       try {
         setLoading(true);
-        const data = await getSessionSummary(sessionId);
-        setSummary(data);
+        const [summaryData, sessionData] = await Promise.all([
+          getSessionSummary(sessionId),
+          getSession(sessionId),
+        ]);
+        setSummary(summaryData);
+        setSession(sessionData);
         setLoading(false);
       } catch (err) {
         setError(err.message || "Failed to load summary");
@@ -40,7 +48,7 @@ const Summary = ({ sessionId, onNavigate }) => {
       <div className="summary">
         <div className="summary-container">
           <div className="summary-error">{error}</div>
-          <Button onClick={() => onNavigate("library")}>Back to library</Button>
+          <Button onClick={() => navigate("/library")}>Back to library</Button>
         </div>
       </div>
     );
@@ -116,22 +124,77 @@ const Summary = ({ sessionId, onNavigate }) => {
             </div>
           )}
 
-        <div className="summary-actions">
-          <Button
-            variant="primary"
-            onClick={() => onNavigate("upload")}
-            fullWidth
-          >
-            Start new session
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => onNavigate("library")}
-            fullWidth
-          >
-            View all sessions
-          </Button>
-        </div>
+        {!user ? (
+          // Guest user - prompt to sign in
+          <div className="summary-actions">
+            <div
+              style={{
+                backgroundColor: "var(--primary-bg)",
+                border: "2px solid var(--primary-color)",
+                borderRadius: "12px",
+                padding: "20px",
+                marginBottom: "20px",
+                textAlign: "center",
+              }}
+            >
+              <h3
+                style={{
+                  color: "var(--primary-color)",
+                  marginTop: 0,
+                  marginBottom: "8px",
+                  fontSize: "18px",
+                }}
+              >
+                {session?.userId === "demo"
+                  ? "Ready to continue learning?"
+                  : "Want to save your progress?"}
+              </h3>
+              <p
+                style={{
+                  color: "var(--text-secondary)",
+                  margin: "0 0 16px 0",
+                  fontSize: "14px",
+                }}
+              >
+                {session?.userId === "demo"
+                  ? "You've completed the demo! Sign in to track your learning sessions, view your progress over time, and access your sessions from any device."
+                  : "Sign in to save your sessions, track your progress over time, and access your learning from any device."}
+              </p>
+              <Button
+                variant="primary"
+                onClick={() => navigate("/login")}
+                fullWidth
+              >
+                Sign in to continue →
+              </Button>
+            </div>
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/")}
+              fullWidth
+            >
+              Back to home
+            </Button>
+          </div>
+        ) : (
+          // Authenticated user - show normal actions
+          <div className="summary-actions">
+            <Button
+              variant="primary"
+              onClick={() => navigate("/upload")}
+              fullWidth
+            >
+              Start new session
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => navigate("/library")}
+              fullWidth
+            >
+              View all sessions
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

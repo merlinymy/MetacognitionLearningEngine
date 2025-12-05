@@ -65,13 +65,17 @@ export async function generateChunks(content, provider = "GEMINI") {
  * @param {Array<string>} expectedPoints - Expected key points
  * @param {string} question - The original question
  * @param {string} provider - LLM provider to use (GEMINI, OPENAI, CLAUDE, ON_DEVICE)
+ * @param {string} muddyPoint - What the user found confusing (optional)
+ * @param {string} priorKnowledge - What the user already knew (optional)
  * @returns {Promise<Object>} Evaluation results
  */
 export async function evaluateResponse(
   userAnswer,
   expectedPoints,
   question,
-  provider = "GEMINI"
+  provider = "GEMINI",
+  muddyPoint = "",
+  priorKnowledge = ""
 ) {
   const providerUpper = provider.toUpperCase();
 
@@ -82,28 +86,36 @@ export async function evaluateResponse(
       return await evaluateResponseWithGemini(
         userAnswer,
         expectedPoints,
-        question
+        question,
+        muddyPoint,
+        priorKnowledge
       );
 
     case LLM_PROVIDERS.OPENAI:
       return await evaluateResponseWithOpenAI(
         userAnswer,
         expectedPoints,
-        question
+        question,
+        muddyPoint,
+        priorKnowledge
       );
 
     case LLM_PROVIDERS.CLAUDE:
       return await evaluateResponseWithClaude(
         userAnswer,
         expectedPoints,
-        question
+        question,
+        muddyPoint,
+        priorKnowledge
       );
 
     case LLM_PROVIDERS.ON_DEVICE:
       return await evaluateResponseWithOnDevice(
         userAnswer,
         expectedPoints,
-        question
+        question,
+        muddyPoint,
+        priorKnowledge
       );
 
     default:

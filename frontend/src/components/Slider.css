@@ -7,6 +7,9 @@
   font-weight: 500;
   color: var(--text-primary);
   margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .slider {

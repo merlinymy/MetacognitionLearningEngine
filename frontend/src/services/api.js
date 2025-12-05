@@ -39,10 +39,16 @@ async function apiFetch(endpoint, options = {}) {
  * Generate chunks from text content
  * POST /api/chunks/generate
  */
-export async function generateChunks(content, title = "", provider = "GEMINI") {
+export async function generateChunks(
+  content,
+  title = "",
+  provider = "GEMINI",
+  userId = "anonymous",
+  defaultGoal = "explain",
+) {
   return apiFetch("/chunks/generate", {
     method: "POST",
-    body: JSON.stringify({ content, title, provider }),
+    body: JSON.stringify({ content, title, provider, userId, defaultGoal }),
   });
 }
 
@@ -137,18 +143,77 @@ export async function getSessionResponses(sessionId) {
 }
 
 /**
+ * Get strategy usage history for a user
+ * GET /api/responses/strategy-history/:strategy
+ */
+export async function getStrategyHistory(strategy, userId = "anonymous") {
+  return apiFetch(`/responses/strategy-history/${strategy}?userId=${userId}`);
+}
+
+/**
  * Update strategy helpfulness
  * PATCH /api/responses/:id/strategy-helpful
  */
-export async function updateStrategyHelpful(responseId, strategyHelpful, strategyReflection = "") {
+export async function updateStrategyHelpful(
+  responseId,
+  strategyHelpful,
+  strategyReflection = "",
+  goalAchieved = null,
+  nextTimeAdjustment = null,
+) {
   return apiFetch(`/responses/${responseId}/strategy-helpful`, {
     method: "PATCH",
-    body: JSON.stringify({ strategyHelpful, strategyReflection }),
+    body: JSON.stringify({
+      strategyHelpful,
+      strategyReflection,
+      goalAchieved,
+      nextTimeAdjustment,
+    }),
   });
 }
 
 // Alias for convenience
 export const markStrategyHelpful = updateStrategyHelpful;
+
+/**
+ * Authentication APIs
+ */
+
+/**
+ * Log out user
+ * POST /api/auth/logout
+ */
+export async function logout() {
+  return apiFetch("/auth/logout", {
+    method: "POST",
+  });
+}
+
+/**
+ * Get current user
+ * GET /api/auth/me
+ */
+export async function getCurrentUser() {
+  return apiFetch("/auth/me");
+}
+
+/**
+ * Get Google OAuth URL
+ */
+export function getGoogleAuthUrl() {
+  return `${API_BASE}/auth/google`;
+}
+
+/**
+ * Migrate guest sessions to authenticated user
+ * POST /api/auth/migrate-guest-data
+ */
+export async function migrateGuestData(sessionIds) {
+  return apiFetch("/auth/migrate-guest-data", {
+    method: "POST",
+    body: JSON.stringify({ sessionIds }),
+  });
+}
 
 export default {
   generateChunks,
@@ -163,4 +228,7 @@ export default {
   submitResponse,
   getSessionResponses,
   updateStrategyHelpful,
+  logout,
+  getCurrentUser,
+  getGoogleAuthUrl,
 };

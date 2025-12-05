@@ -60,6 +60,10 @@
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .learning-phase-subtitle {
@@ -147,6 +151,10 @@
   font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .learning-feedback-text {
@@ -247,6 +255,108 @@
 
 .calibration-message p {
   margin: 0;
+}
+
+/* Prior Knowledge */
+.learning-prior-knowledge {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.learning-prior-knowledge textarea:disabled {
+  background: var(--bg-secondary);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Goal and Strategy Cards with Icons */
+.learning-goal.selected,
+.learning-strategy.selected {
+  background: rgba(37, 99, 235, 0.05);
+  border-color: var(--accent);
+}
+
+.learning-goal-icon,
+.learning-strategy-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.learning-goal-content,
+.learning-strategy-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.learning-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all 0.15s;
+}
+
+.learning-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.learning-input:disabled {
+  background: var(--bg-secondary);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Reminder section */
+.learning-reminder {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.learning-reminder strong {
+  font-weight: 600;
+}
+
+/* Content Review */
+.learning-content-review {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.learning-content-review strong {
+  font-weight: 600;
+}
+
+/* Hints Display */
+.learning-hints {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.learning-hints-display {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.learning-hints-display p {
+  margin: 0;
+}
+
+.learning-hints-display strong {
+  font-weight: 600;
+  color: var(--accent);
 }
 
 @media (max-width: 640px) {
