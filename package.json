@@ -9,6 +9,7 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev": "npm run dev:backend & npm run dev:frontend",
     "build": "cd frontend && npm install && npm run build",
+    "render-build": "npm install && cd frontend && npm install && npm run build",
     "preview": "npm run build && npm start"
   },
   "dependencies": {
