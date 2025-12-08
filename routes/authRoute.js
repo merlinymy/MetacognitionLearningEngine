@@ -25,8 +25,16 @@ router.get(
     failureMessage: true,
   }),
   (req, res) => {
-    // Successful authentication, redirect to frontend
-    res.redirect("/");
+    // Successful authentication
+    // Explicitly save the session before redirecting
+    req.session.save((err) => {
+      if (err) {
+        console.error("Session save error:", err);
+        return res.redirect("/login?error=session");
+      }
+      // Redirect to frontend after session is saved
+      res.redirect("/");
+    });
   }
 );
 
